@@ -1,6 +1,9 @@
-var keys = require('./keys.js');
+
+var client = require('./keys.js');
 
 var command = process.argv[2];
+
+var userRequest = process.argv[3];
 
 if (command === 'my-tweets') {
 	console.log("twitter")
