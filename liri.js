@@ -4,8 +4,10 @@ var request = require("request");
 
 var Spotify = require('node-spotify-api');
 
+
 var TwitterKeys = require('./keys.js');
 
+//variable for logging the users command
 var command = process.argv[2];
 
 var userRequest = process.argv;
@@ -14,6 +16,7 @@ var submission = "";
 
 var fs = require("fs");
 
+//Variable which contains my Twitter keys
 var client = new Twitter({
 	consumer_key: TwitterKeys.twitterKeys.consumer_key,
 	consumer_secret: TwitterKeys.twitterKeys.consumer_secret,
@@ -21,15 +24,19 @@ var client = new Twitter({
 	access_token_secret: TwitterKeys.twitterKeys.access_token_secret
 });
 
+//Variable which contains my Spotify keys
 var spotify = new Spotify({
 	id: '9e9325de360a46f48f6be3286d598b8a',
 	secret: '183d724281a048738ba8d1ad71acdb2d'
 });
 
+//Loop to create string which contains our user inputs
 for (var i = 3; i < userRequest.length; i += 1) {
 	submission = submission + " " + userRequest[i];
 }
 
+//Start of if/else statement which will perform a function based off of what the user wants to run.
+//runs the tweets function which will loop through and post the last 20 tweets posted by the user Keith_Kovach90
 if (command === 'my-tweets') {
 	var package = {count: 20,
 				   result_type: 'recent'};
@@ -43,21 +50,34 @@ if (command === 'my-tweets') {
 			}
 		}
 	})
+
+//will run the spotify function of the user commands it
 } else if (command === 'spotify-this-song') {
 	if (submission === "") {
-		console.log("working")
+		spotify.search({type: 'track', query: "The Sign", limit: 10}, function(err, data) {
+				if (err) {
+					return console.log('Error occured: ' + err);
+				} else {
+					console.log("\nArtist Name(s): " + data.tracks.items[5].album.artists[0].name)
+					console.log("\nSong Name: " + data.tracks.items[0].name)
+					console.log("\nPreview link: " + data.tracks.items[5].preview_url);
+					console.log("\nAlbum name: " + data.tracks.items[5].album.name)
+				}
+			})
 	} else {
 		spotify.search({type: 'track', query: submission, limit: 1}, function(err, data) {
 				if (err) {
 					return console.log('Error occured: ' + err);
 				} else {
 					console.log("\nArtist Name(s): " + data.tracks.items[0].album.artists[0].name)
-					console.log("\nSong Name: " + data.tracks.items[0].album.name)
-					console.log("\nSpotify link: " + data.tracks.href);
+					console.log("\nSong Name: " + data.tracks.items[0].name)
+					console.log("\nPreview link: " + data.tracks.items[0].preview_url);
 					console.log("\nAlbum name: " + data.tracks.items[0].album.name)
 				}
 			})
 	}
+
+//Will run the movie function if the user calls for it
 } else if (command === 'movie-this') {
 	if (submission === "") {
 		request("http://www.omdbapi.com/?t=Mr.+Nobody&apikey=40e9cece", function(error, response, body) {
