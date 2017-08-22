@@ -7,7 +7,6 @@ var Spotify = require('node-spotify-api');
 
 var TwitterKeys = require('./keys.js');
 
-//variable for logging the users command
 var command = process.argv[2];
 
 var userRequest = process.argv;
@@ -16,7 +15,6 @@ var submission = "";
 
 var fs = require("fs");
 
-//Variable which contains my Twitter keys
 var client = new Twitter({
 	consumer_key: TwitterKeys.twitterKeys.consumer_key,
 	consumer_secret: TwitterKeys.twitterKeys.consumer_secret,
@@ -51,8 +49,10 @@ if (command === 'my-tweets') {
 		}
 	})
 
-//will run the spotify function of the user commands it
+//will run the spotify function if the user commands it
 } else if (command === 'spotify-this-song') {
+
+	//If the user doesn't submit a song log data for The Sign by Ace of Base
 	if (submission === "") {
 		spotify.search({type: 'track', query: "The Sign", limit: 10}, function(err, data) {
 				if (err) {
@@ -64,7 +64,10 @@ if (command === 'my-tweets') {
 					console.log("\nAlbum name: " + data.tracks.items[5].album.name)
 				}
 			})
-	} else {
+	} 
+
+	//If the user does request a song log the data for that song here
+	else {
 		spotify.search({type: 'track', query: submission, limit: 1}, function(err, data) {
 				if (err) {
 					return console.log('Error occured: ' + err);
@@ -79,6 +82,8 @@ if (command === 'my-tweets') {
 
 //Will run the movie function if the user calls for it
 } else if (command === 'movie-this') {
+	
+	//If the user doesn't submit any data log the data for Mr. Nobody
 	if (submission === "") {
 		request("http://www.omdbapi.com/?t=Mr.+Nobody&apikey=40e9cece", function(error, response, body) {
 			if (!error && response.statusCode === 200) {
@@ -92,7 +97,10 @@ if (command === 'my-tweets') {
 				console.log("\nActors: " + JSON.parse(body).Actors);
 			}
 		})
-	} else {
+	} 
+
+	//Otherwise log the data that the user requested.
+	else {
 		request("http://www.omdbapi.com/?t=" + submission + "&apikey=40e9cece", function(error, response, body) {
 			if (!error && response.statusCode === 200) {
 				console.log("\nMovie title: " + JSON.parse(body).Title);
@@ -106,6 +114,8 @@ if (command === 'my-tweets') {
 			}
 		})
 	}
+
+  //On this command from the user grab the song title from the random.txt file
 } else if (command === 'do-what-it-says') {
 	fs.readFile("random.txt", "utf8", function(error, data) {
 		if (error) {
@@ -124,6 +134,8 @@ if (command === 'my-tweets') {
 			})	
 		}		
 	})
+
+  //If no command or an incorrect command is selected log this script	
 } else {
 	console.log("Not a recognized command")
 }
