@@ -12,6 +12,8 @@ var userRequest = process.argv;
 
 var submission = "";
 
+var fs = require("fs");
+
 var client = new Twitter({
 	consumer_key: TwitterKeys.twitterKeys.consumer_key,
 	consumer_secret: TwitterKeys.twitterKeys.consumer_secret,
@@ -56,7 +58,6 @@ if (command === 'my-tweets') {
 				}
 			})
 	}
-
 } else if (command === 'movie-this') {
 	if (submission === "") {
 		request("http://www.omdbapi.com/?t=Mr.+Nobody&apikey=40e9cece", function(error, response, body) {
@@ -72,7 +73,7 @@ if (command === 'my-tweets') {
 			}
 		})
 	} else {
-		request("http://www.omdbapi.com/?t=" + submission+ "&apikey=40e9cece", function(error, response, body) {
+		request("http://www.omdbapi.com/?t=" + submission + "&apikey=40e9cece", function(error, response, body) {
 			if (!error && response.statusCode === 200) {
 				console.log("\nMovie title: " + JSON.parse(body).Title);
 				console.log("\nYear of Movie: " + JSON.parse(body).Year);
@@ -86,7 +87,23 @@ if (command === 'my-tweets') {
 		})
 	}
 } else if (command === 'do-what-it-says') {
-	console.log("Do what it says")
+	fs.readFile("random.txt", "utf8", function(error, data) {
+		if (error) {
+			return console.log(error);
+		} else {
+			var songArr = data.split(",");
+			spotify.search({type: 'track', query: songArr[1], limit: 1}, function(err, data) {
+				if (err) {
+					return console.log('Error occured: ' + err);
+				} else {
+					console.log("\nArtist Name(s): " + data.tracks.items[0].album.artists[0].name)
+					console.log("\nSong Name: " + data.tracks.items[0].album.name)
+					console.log("\nSpotify link: " + data.tracks.href);
+					console.log("\nAlbum name: " + data.tracks.items[0].album.name)
+				}
+			})	
+		}		
+	})
 } else {
 	console.log("Not a recognized command")
 }
